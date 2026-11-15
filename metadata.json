@@ -1,0 +1,6 @@
+{
+  "name": "SM GPT",
+  "description": "SM GPT — AI assistant created by Abdus Nilom with backend streaming inference and persistent conversations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

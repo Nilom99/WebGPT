@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SM GPT — AI Assistant by Abdus Nilom</title>
+    <meta
+      name="description"
+      content="SM GPT — AI assistant created by Abdus Nilom with backend streaming inference and persistent conversations."
+    />
+    <meta property="og:title" content="SM GPT — AI Assistant by Abdus Nilom" />
+    <meta
+      property="og:description"
+      content="SM GPT — AI assistant created by Abdus Nilom with backend streaming inference and persistent conversations."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div id="app-shell" class="app-shell">
+      <div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div>
+
+      <aside id="sidebar" class="sidebar" aria-label="Conversation history">
+        <div class="sidebar-header">
+          <div class="brand-lockup">
+            <svg
+              class="brand-mark"
+              width="28"
+              height="28"
+              viewBox="0 0 32 32"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect x="2" y="2" width="28" height="28" rx="8" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M10.5 19.5C10.5 21.433 12.067 23 14 23H18.5C20.433 23 22 21.433 22 19.5C22 17.567 20.433 16 18.5 16H13.5C11.567 16 10 14.433 10 12.5C10 10.567 11.567 9 13.5 9H18C19.933 9 21.5 10.567 21.5 12.5"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+              />
+              <circle cx="22.5" cy="9.5" r="1.75" fill="var(--accent)" />
+            </svg>
+            <span class="brand-name">SM GPT</span>
+          </div>
+          <button
+            id="btn-new-chat"
+            type="button"
+            class="btn-primary btn-new-chat"
+            aria-label="Start a new chat"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+            </svg>
+            <span>New chat</span>
+          </button>
+        </div>
+
+        <div class="sidebar-search">
+          <label for="search-conversations" class="sr-only">Search conversations</label>
+          <div class="search-input-wrap">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-3.5-3.5" stroke-linecap="round" />
+            </svg>
+            <input
+              id="search-conversations"
+              type="search"
+              placeholder="Search chats..."
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Saved conversations">
+          <ul id="conversation-list" class="conversation-list" data-testid="conversation-list"></ul>
+          <p id="conversation-empty" class="conversation-empty" hidden>No matching conversations.</p>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-footer-actions">
+            <button
+              id="btn-theme-toggle"
+              type="button"
+              class="btn-ghost btn-footer"
+              aria-label="Switch color theme"
+            >
+              <svg id="icon-theme-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke-linecap="round" />
+              </svg>
+              <svg id="icon-theme-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" hidden>
+                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span id="theme-toggle-label">Light theme</span>
+            </button>
+            <button
+              id="btn-open-settings"
+              type="button"
+              class="btn-ghost btn-footer"
+              aria-label="Open settings"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h.09a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.09a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+              </svg>
+              <span>Settings</span>
+            </button>
+          </div>
+          <p class="creator-note">SM GPT · Created by Abdus Nilom</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              id="btn-sidebar-toggle"
+              type="button"
+              class="btn-icon"
+              aria-label="Toggle sidebar"
+              aria-expanded="true"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <path d="M9 4v16" />
+              </svg>
+            </button>
+            <h1 id="active-chat-title" class="topbar-title">SM GPT</h1>
+          </div>
+
+          <div class="topbar-center">
+            <span id="engine-status" class="engine-status" data-testid="status-text" role="status" aria-live="polite">
+              Connecting...
+            </span>
+            <button id="btn-retry-init" type="button" class="btn-inline-action" hidden>
+              Retry
+            </button>
+          </div>
+
+          <div class="topbar-right">
+            <button
+              id="btn-export-txt"
+              type="button"
+              class="btn-ghost btn-compact"
+              aria-label="Export conversation as text file"
+              title="Export TXT"
+            >
+              Export TXT
+            </button>
+            <button
+              id="btn-export-json"
+              type="button"
+              class="btn-ghost btn-compact"
+              aria-label="Export conversation as JSON file"
+              title="Export JSON"
+            >
+              Export JSON
+            </button>
+          </div>
+        </header>
+
+        <main id="chat-viewport" class="chat-viewport">
+          <section id="welcome-screen" class="welcome-screen" aria-label="Welcome to SM GPT">
+            <div class="welcome-emblem">
+              <svg width="52" height="52" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                <rect x="2" y="2" width="28" height="28" rx="9" stroke="currentColor" stroke-width="1.8" />
+                <path
+                  d="M10.5 19.5C10.5 21.433 12.067 23 14 23H18.5C20.433 23 22 21.433 22 19.5C22 17.567 20.433 16 18.5 16H13.5C11.567 16 10 14.433 10 12.5C10 10.567 11.567 9 13.5 9H18C19.933 9 21.5 10.567 21.5 12.5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <circle cx="22.5" cy="9.5" r="1.75" fill="var(--accent)" />
+              </svg>
+            </div>
+            <h2 class="welcome-heading">How can I help you today?</h2>
+            <p class="welcome-subtitle">
+              SM GPT · Created by Abdus Nilom · Streaming AI Assistant
+            </p>
+            <div id="starter-grid" class="starter-grid"></div>
+          </section>
+
+          <section
+            id="chat-messages"
+            class="chat-messages"
+            data-testid="chat-messages"
+            aria-label="Conversation messages"
+            hidden
+          ></section>
+        </main>
+
+        <footer class="composer-region">
+          <div id="banner-notice" class="banner-notice" role="alert" hidden>
+            <span id="banner-notice-text"></span>
+            <button id="btn-dismiss-notice" type="button" class="btn-inline-action" aria-label="Dismiss notice">
+              Dismiss
+            </button>
+          </div>
+
+          <form id="composer-form" class="composer-form">
+            <label for="composer-input" class="sr-only">Message SM GPT</label>
+            <textarea
+              id="composer-input"
+              data-testid="composer-input"
+              class="composer-input"
+              rows="1"
+              placeholder="Message SM GPT..."
+              aria-label="Message SM GPT"
+            ></textarea>
+            <div class="composer-actions">
+              <button
+                id="btn-stop"
+                data-testid="stop-btn"
+                type="button"
+                class="btn-stop"
+                aria-label="Stop generating response"
+                hidden
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <rect x="6" y="6" width="12" height="12" rx="2" />
+                </svg>
+                <span>Stop</span>
+              </button>
+              <button
+                id="btn-send"
+                data-testid="send-btn"
+                type="submit"
+                class="btn-send"
+                aria-label="Send message"
+                disabled
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                  <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+          </form>
+
+          <p class="composer-disclaimer">
+            SM GPT can make mistakes. Verify important information.
+          </p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Settings Dialog -->
+    <dialog id="settings-dialog" class="modal-dialog" aria-labelledby="settings-title">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 id="settings-title" class="modal-title">SM GPT Settings</h2>
+          <button id="btn-close-settings" type="button" class="btn-icon" aria-label="Close settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="setting-group">
+            <label for="setting-theme" class="setting-label">Appearance</label>
+            <select id="setting-theme" class="setting-select">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label-row">
+              <label for="setting-max-tokens" class="setting-label">Maximum Response Length</label>
+              <span id="val-max-tokens" class="setting-value">2048 tokens</span>
+            </div>
+            <input id="setting-max-tokens" type="range" min="64" max="2048" step="64" value="2048" />
+          </div>
+
+          <div class="setting-group">
+            <label for="setting-style-preferences" class="setting-label">Response Style Preferences (Optional)</label>
+            <textarea
+              id="setting-style-preferences"
+              class="setting-textarea"
+              rows="3"
+              placeholder="Optional formatting preferences (e.g. concise bullet points). SM GPT identity is managed by the server."
+            ></textarea>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label-row">
+              <label for="setting-temperature" class="setting-label">Creativity (Temperature)</label>
+              <span id="val-temperature" class="setting-value">0.25</span>
+            </div>
+            <input id="setting-temperature" type="range" min="0.0" max="1.2" step="0.05" value="0.25" />
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label-row">
+              <label for="setting-repetition" class="setting-label">Repetition Penalty</label>
+              <span id="val-repetition" class="setting-value">1.10</span>
+            </div>
+            <input id="setting-repetition" type="range" min="1.0" max="1.5" step="0.02" value="1.10" />
+          </div>
+
+          <div class="setting-group">
+            <label for="setting-verification" class="setting-label">Accuracy &amp; Uncertainty Guidance</label>
+            <select id="setting-verification" class="setting-select">
+              <option value="standard">Standard (Balanced helpfulness)</option>
+              <option value="strict">Verification Mode (Strict uncertainty &amp; source discipline)</option>
+            </select>
+          </div>
+
+          <div class="setting-divider"></div>
+
+          <div class="setting-storage">
+            <p class="setting-help-text" id="storage-notice-text"></p>
+            <div class="setting-storage-actions">
+              <button id="btn-reset-settings" type="button" class="btn-ghost">
+                Reset defaults
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Action Dialog (Rename / Delete confirmation) -->
+    <dialog id="action-dialog" class="modal-dialog modal-dialog-sm" aria-labelledby="action-dialog-title">
+      <form id="action-dialog-form" class="modal-card" method="dialog">
+        <div class="modal-header">
+          <h2 id="action-dialog-title" class="modal-title">Confirm action</h2>
+          <button id="btn-action-close" type="button" class="btn-icon" aria-label="Cancel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="action-dialog-message" class="setting-help-text"></p>
+          <div id="action-dialog-input-wrap" class="setting-group" hidden>
+            <label for="action-dialog-input" class="setting-label">Conversation title</label>
+            <input id="action-dialog-input" type="text" class="setting-input" maxlength="80" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-action-cancel" type="button" class="btn-ghost">Cancel</button>
+          <button id="btn-action-confirm" type="submit" class="btn-primary">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
